@@ -34,8 +34,12 @@ RUN comfy-node-install comfyui-reactor comfyui-rmbg && \
 # Bypass ReActor NSFW filter (downloads a large classifier otherwise)
 COPY reactor_sfw.py /comfyui/custom_nodes/comfyui-reactor/scripts/reactor_sfw.py
 
-# Remove unused nodes to speed up startup
+# Remove unused nodes to speed up startup (kills the ~18 comfy_api_nodes import
+# failures: ideogram/openai/gemini/kling/etc. — none used here).
 RUN rm -rf /comfyui/comfy_api_nodes
+
+# Pre-generate matplotlib font cache so it isn't rebuilt (~0.8s) on every cold boot.
+RUN python3 -c "from matplotlib.font_manager import FontManager; FontManager()" || true
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Models — baked in (public sources, no token). Each in its own layer for caching.
