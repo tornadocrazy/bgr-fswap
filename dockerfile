@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.6
 # bgr-fswap — ReActor face swap + RMBG (BiRefNet) background removal only.
 # No generation models. Trimmed from runpod-comfyui-flux-pulid (proven build).
 FROM runpod/worker-comfyui:5.4.1-base
@@ -43,8 +42,7 @@ RUN rm -rf /comfyui/comfy_api_nodes
 # ─────────────────────────────────────────────────────────────────────────────
 
 # InsightFace: buffalo_l (detect/recognize) + inswapper_128 (swap)
-RUN --mount=type=cache,target=/root/.cache \
-    comfy model download \
+RUN     comfy model download \
         --url https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip \
         --relative-path models/insightface/models --filename buffalo_l.zip && \
     unzip /comfyui/models/insightface/models/buffalo_l.zip \
@@ -56,8 +54,7 @@ RUN --mount=type=cache,target=/root/.cache \
 
 # Face restore (GFPGAN) + face detection/parse weights.
 # GFPGAN (used by ReActor) looks in models/facedetection/.
-RUN --mount=type=cache,target=/root/.cache \
-    comfy model download \
+RUN     comfy model download \
         --url https://huggingface.co/gmk123/GFPGAN/resolve/main/GFPGANv1.4.pth \
         --relative-path models/facerestore_models --filename GFPGANv1.4.pth && \
     comfy model download \
@@ -77,7 +74,6 @@ RUN mkdir -p /comfyui/models/RMBG/RMBG-2.0 && \
         "https://huggingface.co/1038lab/RMBG-2.0/raw/main/BiRefNet_config.py" && \
     wget -q -O /comfyui/models/RMBG/RMBG-2.0/config.json \
         "https://huggingface.co/1038lab/RMBG-2.0/resolve/main/config.json"
-RUN --mount=type=cache,target=/root/.cache \
-    comfy model download \
+RUN     comfy model download \
         --url https://huggingface.co/1038lab/RMBG-2.0/resolve/main/model.safetensors \
         --relative-path models/RMBG/RMBG-2.0 --filename model.safetensors
